@@ -1,0 +1,13 @@
+services:
+  kashiteapp:
+    build: ./app
+    container_name: kashiteapp
+    ports:
+      - "127.0.0.1:8030:8000"
+    environment:
+      # kashite.space の WordPress REST API ベースURL
+      - KASHITE_BASE_URL=https://kashite.space/wp-json/kashiteapp/v0_1_0
+    restart: unless-stopped
+    # ローカル開発でコードをいじりたいならコメント外す
+    # volumes:
+    #   - ./app:/app

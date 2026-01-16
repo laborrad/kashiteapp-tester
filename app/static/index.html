@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>KASHITE API テスター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <meta name="referrer" content="no-referrer">
+</head>
+<body>
+<div class="app-root">
+  <header class="app-header">
+    <div class="title-block">
+      <h1>KASHITE API テスター</h1>
+      <div class="remote-line">
+        Remote:
+        <code id="remoteBase">https://kashite.space/wp-json/kashiteapp/v1</code>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- 左カラム -->
+    <div class="left-pane">
+
+      <!-- 基本テスト（自動生成の“正解集合”は routes|keys のうち GET & no-param） -->
+      <section class="panel">
+        <h2>基本テスト</h2>
+        <!--<div class="btn-row">
+          <button class="btn btn-primary" data-api="/">/</button>
+          <button class="btn" data-api="/meta">/meta</button>
+          <button class="btn" data-api="/test/run">/test/run</button>
+      
+          <button class="btn" data-api="/ping">/ping</button>
+          <button class="btn" data-api="/filters">/filters</button>
+          <button class="btn" data-api="/price_range">/price_range</button>
+      
+          <button class="btn" data-api="/option_space_type">/option_space_type</button>
+          <button class="btn" data-api="/option_space_use">/option_space_use</button>
+          <button class="btn" data-api="/option_space_area">/option_space_area</button>
+      
+          <button class="btn" data-api="/search_url">/search_url</button>
+          <button class="btn" data-api="/search_results">/search_results</button>
+      
+          <button class="btn" data-api="/debug/woof">/debug/woof</button>
+          <button class="btn" data-api="/news">/news</button>
+	</div>-->
+        <div id="basicTestButtons" class="btn-row"></div>
+      </section>
+
+      <section class="panel">
+        <h2>インフォメーション (news)</h2>
+      
+        <div class="panel-body two-columns">
+          <div class="panel-left">
+            <p class="panel-desc">
+              All
+            </p>
+          </div>
+          <div class="panel-right">
+            <div id="news-result" class="news-layout empty-hint">
+              取得中...
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 検索条件 → /search_url -->
+      <section class="panel">
+        <!-- 会場タイプ -->
+        <section class="filter-group">
+          <h3>会場タイプ（space_type）</h3>
+          <div id="filter-space-type" class="checkbox-grid"></div>
+        </section>
+      </section>
+      <section class="panel">
+        <!-- 利用目的 -->
+        <section class="filter-group">
+          <h3>利用目的（space_use）</h3>
+          <div id="filter-space-use" class="checkbox-grid"></div>
+        </section>
+      </section>
+      <section class="panel">
+        <!-- エリア -->
+        <section class="filter-group">
+          <h3>エリア（space_area）</h3>
+          <div id="filter-space-area" class="checkbox-grid"></div>
+        </section>
+      </section>
+      <section class="panel">
+        <h2>🔍検索 → /search_url</h2>
+
+        <div class="form-row">
+          <label for="keywordInput">キーワード</label>
+          <input id="keywordInput" type="text" placeholder="キーワード（任意）">
+        </div>
+
+        <!-- 立地条件 -->
+        <section class="filter-group">
+          <div id="filter-location" class="checkbox-grid"></div>
+        </section>
+
+        <!-- 飲食 -->
+        <section class="filter-group">
+          <div id="filter-eating" class="checkbox-grid"></div>
+        </section>
+
+        <!-- 設備・仕様 -->
+        <section class="filter-group">
+          <div id="filter-facility" class="checkbox-grid"></div>
+        </section>
+
+        <!-- 支払方法 -->
+        <section class="filter-group">
+          <div id="filter-payment" class="checkbox-grid"></div>
+        </section>
+
+        <!-- 料金レンジ -->
+        <section class="filter-group">
+          <h3>料金レンジ</h3>
+          <div id="priceRangeArea" class="price-range"></div>
+        </section>
+
+	<button type="button" id="btn-clear-conditions" class="btn btn-sm">
+          条件クリア
+        </button>
+        <button id="btn-generate-search-url" class="btn btn-primary wide">
+          条件から /search_url を生成
+        </button>
+      </section>
+
+      <!-- /search_results -->
+      <section class="panel">
+        <h2>/search_results</h2>
+
+        <div class="form-row">
+          <label for="searchUrlInput">search_results 用 URL（kashite.space の /shop/ URL）</label>
+          <input id="searchUrlInput" type="text" placeholder="/search_url の結果をここに入れる">
+        </div>
+
+        <button id="btn-search-results" class="btn btn-primary wide">
+          /search_results を実行
+        </button>
+
+        <div id="searchResultsArea" class="cards-area"></div>
+      </section>
+
+      <!-- カレンダー API -->
+      <section class="panel">
+        <h2>カレンダー API</h2>
+
+        <div class="form-row">
+          <label for="calendarIdInput">calendar_id</label>
+          <input
+            id="calendarIdInput"
+            type="number"
+            placeholder="product API の結果から自動入力される場合あり">
+          <label>start（任意）</label>
+          <input id="calendarStartInput" type="text" placeholder="yyyy-mm-dd">
+          <label>end（任意）</label>
+          <input id="calendarEndInput" type="text" placeholder="yyyy-mm-dd">
+        </div>
+
+        <div class="btn-row">
+          <button id="btn-calendar" class="btn">
+            /calendar/{id}
+          </button>
+        </div>
+      </section>
+
+      <!-- /cart/bridge（予約投入） -->
+      <section class="panel">
+        <h2>カート投入（/cart/bridge）</h2>
+      
+        <div class="form-row">
+          <label for="cartCalendarIdInput">calendar_id</label>
+          <input id="cartCalendarIdInput" type="number" placeholder="例: 8">
+      
+          <label for="cartDateInput">date（必須）</label>
+          <input id="cartDateInput" type="text" placeholder="yyyy-mm-dd">
+      
+          <label for="cartStartHourInput">start_hour（必須）</label>
+          <input id="cartStartHourInput" type="text" placeholder="HH:MM">
+      
+          <label for="cartEndHourInput">end_hour（必須）</label>
+          <input id="cartEndHourInput" type="text" placeholder="HH:MM">
+        </div>
+      
+        <div class="btn-row">
+          <button id="btn-cart-bridge" class="btn btn-primary">/cart/bridge</button>
+          <button id="btn-cart-bridge-copy" class="btn">URLをコピー</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 右カラム -->
+    <div class="right-pane">
+      <section class="panel">
+        <h2>ログ / 進行状況</h2>
+        <ul id="logList" class="log-list"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>レスポンス</h2>
+        <div class="response-meta">
+	  <div class="response-header">
+            <div class="label">Request</div>
+            <div id="reqPath" class="req-path">(まだリクエストなし)</div>
+	  </div>
+        </div>
+        <button id="btn-copy-response" type="button" class="btn btn-secondary btn-sm">JSONをコピー</button>
+        <pre id="resJson" class="res-json">(レスポンス JSON)</pre>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- 商品プレビューモーダル -->
+<div id="productModal" class="product-modal">
+  <div class="product-modal-backdrop"></div>
+
+  <div class="product-modal-dialog">
+    <header class="product-modal-header">
+      <div class="pm-title-block">
+        <div id="pmTitle" class="pm-title"></div>
+        <div id="pmPrice" class="pm-price"></div>
+      </div>
+      <div class="pm-header-actions">
+        <a id="pmLink" class="pm-site-link" href="#" target="_blank" rel="noopener">
+          サイトで見る
+        </a>
+        <button id="pmClose" type="button" class="pm-close-btn">×</button>
+      </div>
+    </header>
+
+    <div class="product-modal-body">
+      <!-- メイン画像＋サムネ -->
+      <div class="pm-main-image-wrap">
+        <img id="pmMainImage" src="" alt="">
+      </div>
+      <div id="pmThumbs" class="pm-thumbs"></div>
+
+      <!-- ショート説明 -->
+      <div id="pmShortDesc" class="pm-shortdesc"></div>
+
+      <!-- ここに概要 / 設備 / アクセス / 写真・ビデオ / お問い合わせ を縦積み -->
+      <div id="pmSections" class="pm-sections"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
+

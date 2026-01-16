@@ -1,0 +1,242 @@
+--- a/app/static/app.js
++++ b/app/static/app.js
+@@ -1,3 +1,4 @@
++
+ // -----------------------
+ // 定数
+ // -----------------------
+@@ -691,6 +692,61 @@
+ // 追加：/cart/bridge URL を作る
+ function buildCartBridgeUrl({ calendar_id, date, start_hour, end_hour }) {
+   const url = new URL(REMOTE_BASE + "/cart/bridge");
+   url.searchParams.set("calendar_id", String(calendar_id));
+   url.searchParams.set("date", date);
+   url.searchParams.set("start_hour", start_hour);
+   url.searchParams.set("end_hour", end_hour);
+   return url.toString();
+ }
++
++function clearBookingState(container) {
++  bookingStateMap.delete(container);
++}
++
++function timeToMinutes(hm) {
++  const parts = String(hm || "").split(":");
++  if (parts.length < 2) return null;
++  const h = Number(parts[0]);
++  const m = Number(parts[1]);
++  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
++  return h * 60 + m;
++}
++
++function normalizeRange(a, b) {
++  const am = timeToMinutes(a);
++  const bm = timeToMinutes(b);
++  if (am == null || bm == null) return null;
++  if (am <= bm) return { start: a, end: b };
++  return { start: b, end: a };
++}
++
++function clearSlotClasses(container) {
++  container.querySelectorAll(".kb-slot").forEach((el) => {
++    el.classList.remove("is-selected");
++    el.classList.remove("is-range");
++    el.classList.remove("is-range-start");
++    el.classList.remove("is-range-end");
++  });
++}
++
++function applySelectionUI(container, date, startHour, endHour, mode) {
++  clearSlotClasses(container);
++  if (!date || !startHour || !endHour) return;
++  if (mode === "single") {
++    const btn = container.querySelector(
++      `.kb-slot.is-available[data-date="${date}"][data-time-start="${startHour}"][data-time-end="${endHour}"]`
++    );
++    if (btn) btn.classList.add("is-selected");
++    return;
++  }
++  const r = normalizeRange(startHour, endHour);
++  if (!r) return;
++  const sMin = timeToMinutes(r.start);
++  const eMin = timeToMinutes(r.end);
++  if (sMin == null || eMin == null) return;
++  const slots = Array.from(container.querySelectorAll(".kb-slot.is-available")).filter(
++    (b) => b.dataset.date === date
++  );
++  slots.forEach((b) => {
++    const bMin = timeToMinutes(b.dataset.timeStart);
++    if (bMin == null) return;
++    if (bMin >= sMin && bMin <= eMin) b.classList.add("is-range");
++  });
++  const startBtn = slots.find((b) => b.dataset.timeStart === r.start);
++  const endBtn = slots.find((b) => b.dataset.timeStart === r.end);
++  if (startBtn) startBtn.classList.add("is-range-start");
++  if (endBtn) endBtn.classList.add("is-range-end");
++}
++
++function writeCartBridgeInputs(calendarId, date, startHour, endHour) {
++  const cId = document.getElementById("cartCalendarIdInput");
++  const cDate = document.getElementById("cartDateInput");
++  const cStart = document.getElementById("cartStartHourInput");
++  const cEnd = document.getElementById("cartEndHourInput");
++  if (cId) cId.value = calendarId ? String(calendarId) : "";
++  if (cDate) cDate.value = date || "";
++  if (cStart) cStart.value = startHour || "";
++  if (cEnd) cEnd.value = endHour || "";
++}
+ 
+ function setupSlotClickHandlers(container, slots) {
+   const slotButtons = container.querySelectorAll(".kb-slot.is-available");
+   if (!slotButtons.length) return;
+@@ -700,52 +756,127 @@
+   // 親コンテナに calendar_id を仕込んでる前提（あなたの render では dataset.calendarId 入ってる）
+   const calendarId = Number(container.dataset.calendarId || 0);
+ 
+   slotButtons.forEach((btn) => {
+     btn.addEventListener("click", () => {
+-      // 見た目上の選択
+-      container.querySelectorAll(".kb-slot").forEach((b) => {
+-        b.classList.remove("is-selected");
+-      });
+-      btn.classList.add("is-selected");
+-
+       const date = btn.dataset.date;
+       const timeStart = btn.dataset.timeStart;
+       const timeEnd = btn.dataset.timeEnd;
+ 
+       const slot = slots.find(
+         (s) =>
+           s.date === date &&
+           s.time_start === timeStart &&
+           s.time_end === timeEnd
+       );
+       if (!slot) return;
+ 
+-      // ★選択状態を保持（コンテナごと）
+-      const selectedBooking = setBookingState(container, {
+-        calendar_id: calendarId,
+-        date,
+-        start_hour: timeStart,
+-        end_hour: timeEnd,
+-      });
+-
+-      const cId = document.getElementById("cartCalendarIdInput");
+-      const cDate = document.getElementById("cartDateInput");
+-      const cStart = document.getElementById("cartStartHourInput");
+-      const cEnd = document.getElementById("cartEndHourInput");
+-      if (cId) cId.value = String(calendarId);
+-      if (cDate) cDate.value = date;
+-      if (cStart) cStart.value = timeStart;
+-      if (cEnd) cEnd.value = timeEnd;
+-
+-      const bridgeUrl = buildCartBridgeUrl(selectedBooking);
+-
+-      logLine(
+-        `枠選択: ${date} ${timeStart}〜${timeEnd} / ${slot.price}円 / status=${slot.status}`
+-      );
+-      logLine(`bridge: ${bridgeUrl}`);
++      const st = getBookingState(container);
++
++      // 1) 単一選択中で同じ枠を再クリック → 解除
++      if (
++        st &&
++        st.mode === "single" &&
++        st.date === date &&
++        st.start_hour === timeStart &&
++        st.end_hour === timeEnd
++      ) {
++        clearBookingState(container);
++        clearSlotClasses(container);
++        writeCartBridgeInputs("", "", "", "");
++        logLine(`枠解除: ${date} ${timeStart}〜${timeEnd}`);
++        return;
++      }
++
++      // 2) 範囲選択中で範囲内をクリック → 解除
++      if (st && st.mode === "range" && st.date === date) {
++        const rr = normalizeRange(st.start_hour, st.end_hour);
++        if (rr) {
++          const cMin = timeToMinutes(timeStart);
++          const sMin = timeToMinutes(rr.start);
++          const eMin = timeToMinutes(rr.end);
++          if (
++            cMin != null &&
++            sMin != null &&
++            eMin != null &&
++            cMin >= sMin &&
++            cMin <= eMin
++          ) {
++            clearBookingState(container);
++            clearSlotClasses(container);
++            writeCartBridgeInputs("", "", "", "");
++            logLine(`範囲解除: ${date} ${rr.start}〜${rr.end}`);
++            return;
++          }
++        }
++      }
++
++      // 3) 1回目クリック（起点セット）: pending
++      //  - 日付が違う / 状態が無い / pending以外 なら起点に戻す
++      if (!st || st.date !== date || st.mode !== "pending") {
++        setBookingState(container, {
++          mode: "pending",
++          calendar_id: calendarId,
++          date,
++          start_hour: timeStart,
++          end_hour: timeEnd,
++        });
++        applySelectionUI(container, date, timeStart, timeEnd, "single");
++        writeCartBridgeInputs(calendarId, date, timeStart, timeEnd);
++        const bridgeUrl1 = buildCartBridgeUrl({
++          calendar_id: calendarId,
++          date,
++          start_hour: timeStart,
++          end_hour: timeEnd,
++        });
++        logLine(
++          `枠選択: ${date} ${timeStart}〜${timeEnd} / ${slot.price}円 / status=${slot.status}`
++        );
++        logLine(`bridge: ${bridgeUrl1}`);
++        return;
++      }
++
++      // 4) 2回目クリック（範囲確定）: range
++      // start は time_start 同士で正規化、end は「クリックした枠の time_end」を採用
++      const rr2 = normalizeRange(st.start_hour, timeStart);
++      if (!rr2) return;
++
++      const stMin = timeToMinutes(st.start_hour);
++      const curMin = timeToMinutes(timeStart);
++      if (stMin == null || curMin == null) return;
++
++      const startHour = rr2.start;
++      const endHour = curMin >= stMin ? timeEnd : st.end_hour;
++
++      setBookingState(container, {
++        mode: "range",
++        calendar_id: calendarId,
++        date,
++        start_hour: startHour,
++        end_hour: endHour,
++      });
++
++      applySelectionUI(container, date, rr2.start, rr2.end, "range");
++      writeCartBridgeInputs(calendarId, date, startHour, endHour);
++
++      const bridgeUrl2 = buildCartBridgeUrl({
++        calendar_id: calendarId,
++        date,
++        start_hour: startHour,
++        end_hour: endHour,
++      });
++      logLine(`範囲選択: ${date} ${startHour}〜${endHour} / status=${slot.status}`);
++      logLine(`bridge: ${bridgeUrl2}`);
+ 
+       // ★即遷移したいならここで（WebView用）
+       // location.href = bridgeUrl;
+       // ★別タブで開きたいなら
+       // window.open(bridgeUrl, "_blank", "noopener");
+     });
+   });
+ }

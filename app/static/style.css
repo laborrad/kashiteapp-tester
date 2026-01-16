@@ -1,0 +1,917 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 12px 20px;
+  background: #111827;
+  color: #f9fafb;
+}
+
+.title-block h1 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.remote-line {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.remote-line code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* メインレイアウト */
+
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+  gap: 16px;
+  padding: 16px 20px 24px;
+}
+
+.left-pane,
+.right-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* パネル */
+
+.panel {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px 14px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.panel-response {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+/* ボタン */
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #f9fafb;
+}
+
+.btn-xs {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.btn:hover {
+  filter: brightness(0.97);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.btn.wide {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* フォーム */
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.form-row label {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.form-row input[type="text"],
+.form-row input[type="number"] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+}
+
+/* フィルタ */
+
+.filter-group h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.filter-group {
+  margin-bottom: 1.5rem;
+}
+
+.filter-subgroup {
+  margin-bottom: 8px;
+}
+
+.filter-subtitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+
+.checkbox-item {
+  font-size: 13px;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* 価格レンジ：2ハンドル 1本バー */
+
+.price-range {
+  margin-top: 4px;
+}
+
+.price-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.price-values {
+  display: flex;
+  justify-content: space-between;
+}
+
+.price-badge {
+  min-width: 60px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #2563eb;
+  color: #f9fafb;
+  font-size: 12px;
+  text-align: center;
+}
+
+.price-slider-track {
+  position: relative;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.price-slider-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.price-slider-range {
+  position: absolute;
+  height: 4px;
+  border-radius: 999px;
+  background: #60a5fa;
+}
+
+/* 上に重ねる2本の range。トラックは隠し、つまみだけ使う */
+
+.price-slider-track input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: transparent;
+  margin: 0;
+  pointer-events: none; /* つまみだけにイベントを通す */
+}
+
+.price-slider-track input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.price-slider-track input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+}
+
+/* Firefox のトラックも消す */
+.price-slider-track input[type="range"]::-moz-range-track {
+  background: transparent;
+}
+
+/* ログ / レスポンス */
+
+.log-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.log-list li {
+  padding: 2px 0;
+}
+
+.response-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.response-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.response-meta .label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.req-path {
+  font-size: 12px;
+  word-break: break-all;
+  background: #f3f4f6;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.res-json {
+  margin: 0;
+  overflow: auto;
+  font-size: 12px;
+  background: #0b1020;
+  color: #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 検索結果カード */
+
+.cards-area {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-card {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.result-card:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.result-card.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+}
+
+.card-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #e5e7eb;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.card-price {
+  font-size: 12px;
+  color: #374151;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.card-actions a {
+  font-size: 12px;
+  color: #1d4ed8;
+}
+
+/* 会場タイプ / 利用目的 / エリア を横スクロールカルーセル風に */
+#filter-space-type,
+#filter-space-use,
+#filter-space-area {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  scroll-snap-type: x mandatory;
+}
+
+/* 1件ずつスナップ */
+.thumb-option {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* 県名見出しも横に並ぶ想定 */
+.area-pref-title {
+  flex: 0 0 auto;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.thumb-option-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  transform: scale(1.2);
+}
+
+.thumb-option-inner {
+  width: 260px;          /* 好きな幅に調整 */
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  background: #fff;
+}
+
+.thumb-option-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.thumb-option-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb-option-image_1_1 {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.thumb-option-image_1_1 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb-option-label {
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* チェックされたら枠を強調 */
+.thumb-option-checkbox:checked + .thumb-option-inner {
+  outline: 3px solid #2467ff;
+  outline-offset: -3px;
+}
+
+/* ----- News (/news) layout ----- */
+
+.news-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr);
+  gap: 24px;
+}
+
+.news-main {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 220px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-end;
+}
+
+.news-main-thumb {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.7);
+}
+
+.news-main-overlay {
+  position: relative;
+  padding: 24px;
+}
+
+.news-main-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.news-main-date {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.news-side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.news-item {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.news-item-thumb {
+  width: 100%;
+  padding-top: 62%;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-color: #f1f3f5;
+}
+
+.news-item-body {
+  min-width: 0;
+}
+
+.news-item-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.news-item-date {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* モバイルで縦並び */
+@media (max-width: 900px) {
+  .news-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* レスポンシブ */
+
+@media (max-width: 960px) {
+  .app-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* ===== 商品プレビューモーダル ===== */
+
+.product-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-modal.is-open {
+  display: flex;
+}
+
+.product-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.product-modal-dialog {
+  position: relative;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.4);
+  width: min(1080px, 100% - 32px);
+  max-height: 90vh;           /* 画面からはみ出さない */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.product-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pm-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pm-price {
+  font-size: 13px;
+  color: #b91c1c;
+  margin-top: 2px;
+}
+
+.pm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pm-site-link {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+  text-decoration: none;
+}
+
+.pm-close-btn {
+  border: none;
+  border-radius: 999px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+.product-modal-body {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* 上側：画像まわり。高さ制限して下の領域に侵食しないようにする */
+
+.pm-main-image-wrap {
+  width: 100%;
+  max-height: 260px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.pm-main-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pm-thumbs {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.pm-thumb-img-wrap {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.pm-thumb-img-wrap img {
+  display: block;
+  width: 90px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.pm-thumb-img-wrap.is-active {
+  outline: 2px solid #2563eb;
+}
+
+/* 本文エリア */
+
+.pm-shortdesc {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.pm-sections {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pm-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 10px;
+}
+
+.pm-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.pm-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pm-section th,
+.pm-section td {
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* お問い合わせフォーム表示用 */
+
+.pm-contact-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pm-contact-table th,
+.pm-contact-table td {
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  padding: 6px 8px;
+}
+
+.enq-grid{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:6px 10px;
+  align-items:center;
+}
+.enq-grid input[type="text"],
+.enq-grid input[type="number"],
+.enq-grid textarea{
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+  font-size:13px;
+}
+.btn-enq-send:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+
+
+
+/* 予約 iframe 周り */
+.pm-booking-iframe-wrap {
+  width: 100%;
+  max-height: 70vh;      /* 必要なら調整 */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;      /* カレンダーがはみ出さないように */
+  box-sizing: border-box;
+}
+
+.pm-booking-iframe {
+  width: 100%;
+  height: 70vh;          /* ↑と揃える or 好きな高さに */
+  border: none;
+}
+
+.pm-booking-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* モバイルはボトムシート風に */
+
+@media (max-width: 768px) {
+  .product-modal {
+    align-items: flex-end;
+  }
+  .product-modal-dialog {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+/* ===== 予約カレンダー（kb-） ===== */
+
+.kashite-booking {
+  width: 100%;
+}
+
+.kb-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.kb-day {
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.kb-day.is-selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37,99,235,.35);
+}
+
+.kb-day.is-disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.kb-day-status {
+  font-weight: 700;
+}
+
+.kb-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kb-slot {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 8px 10px;
+  cursor: pointer;
+
+  display: grid;
+  grid-template-columns: 140px 110px 1fr;
+  gap: 10px;
+  align-items: center;
+
+  text-align: left;
+}
+
+.kb-slot.is-booked {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.kb-slot-time { font-variant-numeric: tabular-nums; }
+.kb-slot-price { font-weight: 600; }
+.kb-slot-status { font-size: 12px; color: #374151; }
+
+.kb-slot.is-range {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #111827;
+}
+
+.kb-slot.is-range .kb-slot-status { color: #e5e7eb; }
+
+.kb-slot.is-range-start {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.kb-slot.is-range-end {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.kb-slot.is-selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37,99,235,.35);
+  background: #eff6ff;
+}
+
+/* --- booking click fix (Safari / modal overlay) --- */
+.kashite-booking,
+.kb-slots,
+.kb-slots-list,
+.kb-slot {
+  position: relative;
+ z-index: 1;
+}
+
+/* backdrop が slots の上に乗ってたら殺す */
+.product-modal-backdrop {
+  pointer-events: auto; /* 通常はこれでOK */
+}
+
+
