@@ -1,5 +1,7 @@
 # KASHITE API テスター
 
+[![E2E Tests](https://github.com/laborrad/kashiteapp-tester/actions/workflows/test.yml/badge.svg)](https://github.com/laborrad/kashiteapp-tester/actions/workflows/test.yml)
+
 KASHITE API（https://kashite.space）の動作確認・テスト用Webアプリケーション。
 
 ## 概要
@@ -89,15 +91,22 @@ GitHub Actionsを使用して、PR作成時・マージ時に自動的にE2Eテ�
 
 ## 構成
 
-- `app/`: Pythonアプリケーション（FastAPI）
-  - `main.py`: APIプロキシサーバー
-  - `static/`: フロントエンドファイル
-    - `index.html`: メインHTML
-    - `app.js`: JavaScriptロジック
-    - `style.css`: スタイル
-- `tests/`: E2Eテストスイート
-- `docker-compose.yml`: Docker構成
-- `.github/workflows/`: CI/CD設定
+```
+├── app/                     # Pythonアプリケーション（FastAPI）
+│   ├── main.py             # APIプロキシサーバー
+│   ├── static/             # フロントエンドファイル
+│   │   ├── index.html      # メインHTML
+│   │   ├── app.js          # JavaScriptロジック
+│   │   └── style.css       # スタイル
+│   └── requirements.txt    # Python依存関係
+├── tests/                  # E2Eテストスイート
+│   └── test_api.spec.js    # Playwrightテスト
+├── .github/workflows/      # CI/CD設定
+│   └── test.yml            # GitHub Actionsワークフロー
+├── docker-compose.yml      # Docker構成
+├── playwright.config.js    # Playwright設定
+└── package.json            # Node.js依存関係
+```
 
 ## ライセンス
 
