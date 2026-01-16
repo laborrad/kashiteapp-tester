@@ -22,7 +22,7 @@ KASHITE API（https://kashite.space）の動作確認・テスト用Webアプリ
 ### 必要な環境
 
 - Docker & Docker Compose
-- Node.js 20+ (テスト実行用)
+- Node.js 20+ (テスト実行用、ローカルテストする場合のみ)
 
 ### ローカル起動
 
@@ -34,13 +34,23 @@ http://localhost:8000 でアクセス可能
 
 ### E2Eテストの実行
 
+#### Debian/Ubuntuでのセットアップ
+
 ```bash
+# Node.jsとnpmのインストール（初回のみ）
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
 # 依存関係のインストール
 npm install
 
 # Playwrightブラウザのインストール
-npx playwright install --with-deps
+npx playwright install --with-deps chromium
+```
 
+#### テスト実行
+
+```bash
 # テスト実行
 npm test
 
@@ -53,6 +63,8 @@ npm run test:headed
 # テストレポート表示
 npm run test:report
 ```
+
+**注意**: ローカルでテストを実行しなくても、GitHubにpushすれば自動的にGitHub Actions上でテストが実行されます。
 
 ### CI/CD
 
